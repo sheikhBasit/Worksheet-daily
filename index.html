@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl" id="root">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worksheets | ورک شیٹس</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --em: #1a6b5a;
+      --eml: #2a9478;
+      --emp: #e8f5f1;
+      --gd: #c9a84c;
+      --cr: #fdf9f0;
+      --ink: #1c1c1c;
+      --mu: #6b7280;
+      --bd: #d1e8e0;
+      --wh: #fff;
+      --sh: 0 4px 24px rgba(26, 107, 90, .10);
+      --rd: 14px;
+      --fb: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
+      --fu: 'Noto Sans Arabic', sans-serif;
+    }
+
+    html[lang="en"] {
+      --fb: 'DM Sans', sans-serif;
+      --fu: 'DM Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--fb);
+      background: var(--cr);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--em), #0f4a3a);
+      padding: 28px 20px 22px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    header h1 {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      color: #fff;
+      position: relative;
+    }
+
+    header p {
+      color: rgba(255, 255, 255, .7);
+      font-size: .9rem;
+      margin-top: 5px;
+      font-family: var(--fu);
+      position: relative;
+    }
+
+    .ltog {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      display: flex;
+      background: rgba(255, 255, 255, .15);
+      border-radius: 50px;
+      padding: 3px;
+      gap: 2px;
+      z-index: 10;
+    }
+
+    .lbtn {
+      padding: 5px 15px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: rgba(255, 255, 255, .75);
+      background: transparent;
+    }
+
+    .lbtn.active {
+      background: #fff;
+      color: var(--em);
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #fff;
+      border-bottom: 2px solid var(--bd);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+    }
+
+    .tbtn {
+      flex: 1;
+      max-width: 220px;
+      padding: 14px 12px;
+      border: none;
+      background: transparent;
+      font-family: var(--fb);
+      font-size: .88rem;
+      color: var(--mu);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all .2s;
+    }
+
+    .tbtn.active {
+      color: var(--em);
+      border-bottom-color: var(--em);
+      font-weight: 600;
+    }
+
+    .tbtn:hover:not(.active) {
+      background: var(--emp);
+      color: var(--em);
+    }
+
+    .panel {
+      display: none;
+      padding: 24px 16px 80px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .panel.active {
+      display: block;
+      animation: fi .3s ease;
+    }
+
+    @keyframes fi {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .card {
+      background: var(--wh);
+      border-radius: var(--rd);
+      box-shadow: var(--sh);
+      padding: 22px 20px;
+      margin-bottom: 18px;
+      border: 1px solid var(--bd);
+    }
+
+    .ctitle {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--em);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cicon {
+      width: 30px;
+      height: 30px;
+      background: var(--emp);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+    }
+
+    .pbar {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .pbar .fd {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    label {
+      display: block;
+      font-size: .82rem;
+      color: var(--mu);
+      margin-bottom: 5px;
+      font-family: var(--fu);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--bd);
+      border-radius: 8px;
+      font-family: var(--fb);
+      font-size: .9rem;
+      color: var(--ink);
+      background: #fafafa;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    html[lang="en"] input[type="text"],
+    html[lang="en"] textarea {
+      direction: ltr;
+      text-align: left;
+    }
+
+    html[lang="ur"] input[type="text"],
+    html[lang="ur"] textarea {
+      direction: rtl;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--eml);
+      box-shadow: 0 0 0 3px rgba(42, 148, 120, .12);
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 65px;
+    }
+
+    .gt {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .gt thead th {
+      background: var(--em);
+      color: #fff;
+      padding: 10px 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    html[lang="ur"] .gt thead th:first-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    html[lang="ur"] .gt thead th:last-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    html[lang="en"] .gt thead th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    html[lang="en"] .gt thead th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .gt tbody tr {
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .gt tbody tr:hover {
+      background: var(--emp);
+    }
+
+    .gt tbody td {
+      padding: 5px 7px;
+      vertical-align: middle;
+    }
+
+    .gt tbody td.cl {
+      font-weight: 600;
+      color: var(--em);
+      white-space: nowrap;
+      padding-inline-start: 12px;
+      min-width: 110px;
+    }
+
+    html[lang="ur"] .gt tbody td.cl {
+      background: linear-gradient(to left, var(--emp), transparent);
+    }
+
+    html[lang="en"] .gt tbody td.cl {
+      background: linear-gradient(to right, var(--emp), transparent);
+      text-align: left;
+    }
+
+    .gt input[type="text"] {
+      border: 1px solid #dde;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: .82rem;
+    }
+
+    .ae {
+      background: #fff;
+      border: 1.5px solid var(--bd);
+      border-radius: var(--rd);
+      padding: 18px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .aenum {
+      position: absolute;
+      top: -11px;
+      inset-inline-end: 18px;
+      background: var(--gd);
+      color: #fff;
+      font-size: .72rem;
+      padding: 2px 11px;
+      border-radius: 20px;
+      font-family: var(--fu);
+      font-weight: 600;
+    }
+
+    .agrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .agrid .full {
+      grid-column: 1/-1;
+    }
+
+    .sw {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sw input[type="range"] {
+      flex: 1;
+      accent-color: var(--em);
+      height: 6px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .sv {
+      min-width: 30px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--em);
+      font-family: var(--fu);
+    }
+
+    .hf {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: flex-end;
+    }
+
+    .hf .fd {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .hl {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hc {
+      background: #fff;
+      border: 1.5px solid var(--bd);
+      border-radius: var(--rd);
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow .2s;
+    }
+
+    .hc:hover {
+      box-shadow: var(--sh);
+    }
+
+    .hch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--emp);
+    }
+
+    .hcn {
+      font-weight: 700;
+      color: var(--em);
+      font-size: .95rem;
+    }
+
+    .hcd {
+      font-family: var(--fu);
+      font-size: .8rem;
+      color: var(--mu);
+    }
+
+    .hcb {
+      padding: 14px 16px;
+      display: none;
+      font-size: .88rem;
+    }
+
+    .hcb.open {
+      display: block;
+    }
+
+    .hrow {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+    }
+
+    .hlbl {
+      font-weight: 600;
+      color: var(--em);
+      min-width: 110px;
+      font-family: var(--fu);
+      font-size: .78rem;
+    }
+
+    .hval {
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .est {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--mu);
+      font-family: var(--fu);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-family: var(--fu);
+      font-weight: 600;
+    }
+
+    .bg {
+      background: var(--emp);
+      color: var(--em);
+    }
+
+    .ba {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--fb);
+      font-size: .88rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .bpr {
+      background: var(--em);
+      color: #fff;
+    }
+
+    .bpr:hover {
+      background: var(--eml);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(26, 107, 90, .3);
+    }
+
+    .bol {
+      background: transparent;
+      border: 1.5px solid var(--em);
+      color: var(--em);
+    }
+
+    .bol:hover {
+      background: var(--emp);
+    }
+
+    .bda {
+      background: #fff;
+      border: 1.5px solid #f3a0a0;
+      color: #c0392b;
+      font-size: .76rem;
+      padding: 5px 11px;
+    }
+
+    .bda:hover {
+      background: #fff0f0;
+    }
+
+    .bsm {
+      padding: 6px 14px;
+      font-size: .82rem;
+    }
+
+    .acts {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    .pbtn {
+      position: fixed;
+      bottom: 22px;
+      left: 22px;
+      background: var(--gd);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-family: var(--fu);
+      font-size: .82rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(201, 168, 76, .4);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      z-index: 999;
+      transition: all .2s;
+    }
+
+    .pbtn:hover {
+      transform: translateY(-2px);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--em);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-family: var(--fu);
+      font-size: .82rem;
+      opacity: 0;
+      transition: all .3s;
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media(max-width:560px) {
+      .agrid {
+        grid-template-columns: 1fr;
+      }
+
+      .gt,
+      .gt thead,
+      .gt tbody,
+      .gt th,
+      .gt td,
+      .gt tr {
+        display: block;
+      }
+
+      .gt thead tr {
+        display: none;
+      }
+
+      .gt tbody tr {
+        margin-bottom: 12px;
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .gt tbody td {
+        padding: 5px 10px;
+      }
+    }
+
+    @media print {
+
+      .tabs,
+      .pbtn,
+      .acts,
+      .btn,
+      .toast,
+      .ltog,
+      .hf {
+        display: none !important;
+      }
+
+      .panel {
+        display: block !important;
+        padding: 0;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="ltog">
+      <button class="lbtn active" id="btn-ur" onclick="setLang('ur')">اردو</button>
+      <button class="lbtn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <h1 id="hdr-title">📋 ورک شیٹس</h1>
+    <p id="hdr-sub">اہداف طے کرنے کا فارم اور غصے کا لاگ</p>
+  </header>
+  <nav class="tabs">
+    <button class="tbtn active" id="tab-goals" onclick="switchTab('goals',event)">🎯 <span
+        id="tgl">اہداف</span></button>
+    <button class="tbtn" id="tab-anger" onclick="switchTab('anger',event)">😤 <span id="tal">غصے کا لاگ</span></button>
+    <button class="tbtn" id="tab-history" onclick="switchTab('history',event)">📂 <span id="thl">پچھلے
+        اندراجات</span></button>
+  </nav>
+
+  <!-- GOALS -->
+  <div class="panel active" id="panel-goals">
+    <div class="card">
+      <div class="ctitle"><span class="cicon">📝</span><span id="gct">اہداف طے کرنے کا ورک شیٹ</span></div>
+      <div class="pbar">
+        <div class="fd"><label id="gln">نام</label><input type="text" id="g-name" placeholder="اپنا نام لکھیں" /></div>
+        <div class="fd"><label id="gld">تاریخ</label><input type="date" id="g-date" /></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle"><span class="cicon">🏹</span><span id="gtt">اہداف کا جدول</span></div>
+      <p id="gth" style="font-size:.82rem;color:var(--mu);margin-bottom:14px;font-family:var(--fu);"></p>
+      <div style="overflow-x:auto;">
+        <table class="gt">
+          <thead>
+            <tr>
+              <th id="gthc">زمرہ</th>
+              <th id="gths"></th>
+              <th id="gthm"></th>
+              <th id="gthl"></th>
+            </tr>
+          </thead>
+          <tbody id="gtb"></tbody>
+        </table>
+      </div>
+      <div class="acts">
+        <button class="btn bpr" onclick="saveGoals()">💾 <span id="gbs">محفوظ کریں</span></button>
+        <button class="btn bol" onclick="resetGoalForm()">🔄 <span id="gbn">نئی اندراج</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANGER -->
+  <div class="panel" id="panel-anger">
+    <div class="card">
+      <div class="ctitle"><span class="cicon">📔</span><span id="act">غصے کا لاگ</span></div>
+      <div class="pbar">
+        <div class="fd"><label id="aln">نام</label><input type="text" id="a-name" placeholder="اپنا نام لکھیں" /></div>
+        <div class="fd"><label id="ald">تاریخ</label><input type="date" id="a-date" /></div>
+      </div>
+    </div>
+    <div id="anger-entries"></div>
+    <button class="btn bol" onclick="addAngerEntry()" style="width:100%;justify-content:center;margin-bottom:14px;">➕
+      <span id="aal">نئی اندراج شامل کریں</span></button>
+    <div class="acts">
+      <button class="btn bpr" onclick="saveAnger()">💾 <span id="abs">محفوظ کریں</span></button>
+      <button class="btn bol" onclick="resetAngerForm()">🔄 <span id="abn">نئی اندراج</span></button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="panel" id="panel-history">
+    <div class="card">
+      <div class="ctitle"><span class="cicon">📂</span><span id="hct">پچھلے اندراجات</span></div>
+      <div class="hf">
+        <div class="fd"><label id="hln">نام سے تلاش</label><input type="text" id="hfn" oninput="renderHistory()"
+            placeholder="نام…" /></div>
+        <div class="fd"><label id="hlt">قسم</label>
+          <select id="hft" onchange="renderHistory()">
+            <option value="" id="hoa">سب</option>
+            <option value="goals" id="hog">اہداف</option>
+            <option value="anger" id="hoa2">غصے کا لاگ</option>
+          </select>
+        </div>
+        <div class="fd"><label id="hld">تاریخ</label><input type="date" id="hfd" oninput="renderHistory()" /></div>
+        <div style="display:flex;align-items:flex-end;"><button class="btn bol bsm" onclick="clearFilters()"
+            id="hcf">فلٹر صاف کریں</button></div>
+      </div>
+    </div>
+    <div id="history-list" class="hl"></div>
+  </div>
+
+  <button class="pbtn" onclick="window.print()">🖨 <span id="prl">پرنٹ / PDF</span></button>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const T = {
+      ur: {
+        dir: 'rtl', lang: 'ur',
+        hT: '📋 ورک شیٹس', hS: 'اہداف طے کرنے کا فارم اور غصے کا لاگ',
+        tG: 'اہداف', tA: 'غصے کا لاگ', tH: 'پچھلے اندراجات',
+        gCT: 'اہداف طے کرنے کا ورک شیٹ', gLN: 'نام', gNP: 'اپنا نام لکھیں', gLD: 'تاریخ',
+        gTT: 'اہداف کا جدول', gTH: 'ہر زمرے کے لیے قلیل، درمیانی اور طویل مدتی ہدف لکھیں',
+        gTC: 'زمرہ', gTS: 'قلیل مدتی<br/><small>(1–3 ماہ)</small>', gTM: 'درمیانی مدتی<br/><small>(3–12 ماہ)</small>', gTL: 'طویل مدتی<br/><small>(1 سال+)</small>',
+        gBS: 'محفوظ کریں', gBN: 'نئی اندراج', pS: 'قلیل مدتی ہدف…', pM: 'درمیانی مدتی ہدف…', pL: 'طویل مدتی ہدف…',
+        aCT: 'غصے کا لاگ', aLN: 'نام', aNP: 'اپنا نام لکھیں', aLD: 'تاریخ',
+        aAL: 'نئی اندراج شامل کریں', aBS: 'محفوظ کریں', aBN: 'نئی اندراج',
+        aEL: 'اندراج', aRM: 'ہٹائیں', aIN: 'غصے کی شدت (1–10)', aBT: 'کیا بہتر کر سکتے تھے؟', aBP: 'اگلی بار کیا مختلف کریں گے…',
+        hCT: 'پچھلے اندراجات', hLN: 'نام سے تلاش', hLT: 'قسم', hLD: 'تاریخ',
+        hOA: 'سب', hOG: 'اہداف', hOA2: 'غصے کا لاگ', hCF: 'فلٹر صاف کریں',
+        hET: 'کوئی اندراج نہیں', hED: 'ابھی تک کوئی ڈیٹا محفوظ نہیں ہوا',
+        pRL: 'پرنٹ / PDF', tG2: 'اہداف محفوظ ہو گئے!', tA2: 'غصے کا لاگ محفوظ ہو گیا!', tC: 'صاف ہو گیا!',
+        cC: 'کیا آپ واقعی صاف کرنا چاہتے ہیں؟', nM: 'براہ کرم نام درج کریں',
+        bG: 'اہداف', bA: 'غصے کا لاگ', delLbl: 'حذف کریں',
+        cats: [
+          { key: 'personal', label: 'ذاتی (Personal)', emoji: '🧘' },
+          { key: 'financial', label: 'مالی (Financial)', emoji: '💰' },
+          { key: 'career', label: 'پیشہ ورانہ (Career)', emoji: '💼' },
+          { key: 'health', label: 'صحت (Health)', emoji: '❤️' },
+          { key: 'relationship', label: 'تعلقات (Relationship)', emoji: '🤝' },
+          { key: 'education', label: 'تعلیم (Education)', emoji: '📚' },
+          { key: 'others', label: 'دیگر (Others)', emoji: '✨' },
+        ],
+        aF: [
+          { key: 'date', label: 'تاریخ', type: 'date', full: false },
+          { key: 'time', label: 'وقت', type: 'time', full: false },
+          { key: 'trigger', label: 'کیا واقعہ پیش آیا؟', type: 'textarea', full: true },
+          { key: 'thought', label: 'اس وقت کیا سوچ آئی؟', type: 'textarea', full: true },
+          { key: 'feeling', label: 'کیسے محسوس کیا؟', type: 'textarea', full: false },
+          { key: 'reaction', label: 'جسمانی ردِ عمل؟', type: 'textarea', full: false },
+          { key: 'behave', label: 'آپ نے کیا کیا؟', type: 'textarea', full: false },
+          { key: 'outcome', label: 'نتیجہ کیا نکلا؟', type: 'textarea', full: false },
+        ]
+      },
+      en: {
+        dir: 'ltr', lang: 'en',
+        hT: '📋 Worksheets', hS: 'Goal Setting Form & Anger Log',
+        tG: 'Goals', tA: 'Anger Log', tH: 'History',
+        gCT: 'Goal Setting Worksheet', gLN: 'Name', gNP: 'Enter your name', gLD: 'Date',
+        gTT: 'Goals Table', gTH: 'Fill in short, medium, and long-term goals for each category',
+        gTC: 'Category', gTS: 'Short-Term<br/><small>(1–3 months)</small>', gTM: 'Medium-Term<br/><small>(3–12 months)</small>', gTL: 'Long-Term<br/><small>(1 year+)</small>',
+        gBS: 'Save Entry', gBN: 'New Entry', pS: 'Short-term goal…', pM: 'Medium-term goal…', pL: 'Long-term goal…',
+        aCT: 'Anger Log', aLN: 'Name', aNP: 'Enter your name', aLD: 'Date',
+        aAL: 'Add New Entry', aBS: 'Save Entry', aBN: 'New Entry',
+        aEL: 'Entry', aRM: 'Remove', aIN: 'Anger Intensity (1–10)', aBT: 'What could you have done better?', aBP: 'What will you do differently next time…',
+        hCT: 'Past Entries', hLN: 'Search by name', hLT: 'Type', hLD: 'Date',
+        hOA: 'All', hOG: 'Goals', hOA2: 'Anger Log', hCF: 'Clear Filters',
+        hET: 'No entries yet', hED: 'No data has been saved yet',
+        pRL: 'Print / PDF', tG2: 'Goals saved!', tA2: 'Anger log saved!', tC: 'Cleared!',
+        cC: 'Are you sure you want to clear?', nM: 'Please enter a name',
+        bG: 'Goals', bA: 'Anger Log', delLbl: 'Delete',
+        cats: [
+          { key: 'personal', label: 'Personal', emoji: '🧘' },
+          { key: 'financial', label: 'Financial', emoji: '💰' },
+          { key: 'career', label: 'Career', emoji: '💼' },
+          { key: 'health', label: 'Health', emoji: '❤️' },
+          { key: 'relationship', label: 'Relationships', emoji: '🤝' },
+          { key: 'education', label: 'Education', emoji: '📚' },
+          { key: 'others', label: 'Others', emoji: '✨' },
+        ],
+        aF: [
+          { key: 'date', label: 'Date', type: 'date', full: false },
+          { key: 'time', label: 'Time', type: 'time', full: false },
+          { key: 'trigger', label: 'What happened? (Trigger)', type: 'textarea', full: true },
+          { key: 'thought', label: 'What were you thinking?', type: 'textarea', full: true },
+          { key: 'feeling', label: 'How did you feel?', type: 'textarea', full: false },
+          { key: 'reaction', label: 'Physical reaction?', type: 'textarea', full: false },
+          { key: 'behave', label: 'What did you do?', type: 'textarea', full: false },
+          { key: 'outcome', label: 'What was the outcome?', type: 'textarea', full: false },
+        ]
+      }
+    };
+
+    let CL = localStorage.getItem('lang') || 'ur', AC = 0;
+    const DB = 'ws_v3';
+    const load = () => JSON.parse(localStorage.getItem(DB) || '[]');
+    const save = a => localStorage.setItem(DB, JSON.stringify(a));
+
+    function setLang(l) {
+      CL = l; localStorage.setItem('lang', l);
+      const t = T[l], r = document.getElementById('root');
+      r.setAttribute('lang', t.lang); r.setAttribute('dir', t.dir);
+      document.getElementById('btn-ur').classList.toggle('active', l === 'ur');
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+      const sh = (id, v) => { const e = document.getElementById(id); if (e) e.innerHTML = v; };
+      s('hdr-title', t.hT); s('hdr-sub', t.hS);
+      s('tgl', t.tG); s('tal', t.tA); s('thl', t.tH);
+      s('gct', t.gCT); s('gln', t.gLN); document.getElementById('g-name').placeholder = t.gNP;
+      s('gld', t.gLD); s('gtt', t.gTT); s('gth', t.gTH);
+      s('gthc', t.gTC); sh('gths', t.gTS); sh('gthm', t.gTM); sh('gthl', t.gTL);
+      s('gbs', t.gBS); s('gbn', t.gBN);
+      s('act', t.aCT); s('aln', t.aLN); document.getElementById('a-name').placeholder = t.aNP;
+      s('ald', t.aLD); s('aal', t.aAL); s('abs', t.aBS); s('abn', t.aBN);
+      s('hct', t.hCT); s('hln', t.hLN); s('hlt', t.hLT); s('hld', t.hLD);
+      s('hoa', t.hOA); s('hog', t.hOG); s('hoa2', t.hOA2); s('hcf', t.hCF);
+      s('prl', t.pRL);
+      buildGoalTable(); rebuildAnger(); renderHistory();
+    }
+
+    function buildGoalTable() {
+      const t = T[CL];
+      document.getElementById('gtb').innerHTML = t.cats.map(c => `
+    <tr>
+      <td class="cl">${c.emoji} ${c.label}</td>
+      <td><input type="text" data-cat="${c.key}" data-term="short" placeholder="${t.pS}"/></td>
+      <td><input type="text" data-cat="${c.key}" data-term="medium" placeholder="${t.pM}"/></td>
+      <td><input type="text" data-cat="${c.key}" data-term="long" placeholder="${t.pL}"/></td>
+    </tr>`).join('');
+    }
+
+    function saveGoals() {
+      const t = T[CL], name = document.getElementById('g-name').value.trim(), date = document.getElementById('g-date').value;
+      if (!name) { showToast(t.nM); return; }
+      const goals = {};
+      document.querySelectorAll('#gtb input').forEach(i => {
+        const c = i.dataset.cat, tm = i.dataset.term;
+        if (!goals[c]) goals[c] = {}; goals[c][tm] = i.value;
+      });
+      const arr = load(); arr.unshift({ id: Date.now(), type: 'goals', name, date, lang: CL, goals, savedAt: new Date().toISOString() }); save(arr);
+      showToast(t.tG2); resetGoalForm(); renderHistory();
+    }
+
+    function resetGoalForm() { buildGoalTable(); document.getElementById('g-date').value = today(); }
+
+    function rebuildAnger() { document.getElementById('anger-entries').innerHTML = ''; AC = 0; addAngerEntry(); }
+
+    function addAngerEntry(sv) {
+      AC++; const n = AC, t = T[CL];
+      const d = document.createElement('div');
+      d.className = 'ae'; d.id = 'anger-' + n;
+      d.innerHTML = `<div class="aenum">${t.aEL} ${n}</div>
+    <div class="agrid">
+      ${t.aF.map(f => `<div class="${f.full ? 'full' : ''}"><label>${f.label}</label>${f.type === 'textarea' ? `<textarea id="ae-${n}-${f.key}" placeholder="${f.label}…">${x2(sv?.[f.key] || '')}</textarea>` : `<input type="${f.type}" id="ae-${n}-${f.key}" value="${x1(sv?.[f.key] || '')}"/>`}</div>`).join('')}
+      <div><label>${t.aIN}</label><div class="sw"><input type="range" min="1" max="10" value="${sv?.intensity || 5}" id="ae-${n}-intensity" oninput="document.getElementById('av-${n}').textContent=this.value"/><span class="sv" id="av-${n}">${sv?.intensity || 5}</span></div></div>
+      <div><label>${t.aBT}</label><textarea id="ae-${n}-better" placeholder="${t.aBP}">${x2(sv?.better || '')}</textarea></div>
+    </div>
+    ${AC > 1 ? `<div style="margin-top:10px;text-align:${CL === 'en' ? 'right' : 'left'}"><button class="btn bda" onclick="remE(${n})">✕ ${t.aRM}</button></div>` : ''}`;
+      document.getElementById('anger-entries').appendChild(d);
+    }
+
+    function remE(n) { const e = document.getElementById('anger-' + n); if (e) e.remove(); }
+
+    function colA() {
+      const keys = [...new Set([...T.ur.aF, ...T.en.aF].map(f => f.key).concat(['intensity', 'better']))];
+      return [...document.querySelectorAll('.ae')].map(e => {
+        const n = e.id.split('-')[1], o = {};
+        keys.forEach(k => { const el = document.getElementById(`ae-${n}-${k}`); if (el) o[k] = el.value; });
+        return o;
+      });
+    }
+
+    function saveAnger() {
+      const t = T[CL], name = document.getElementById('a-name').value.trim(), date = document.getElementById('a-date').value;
+      if (!name) { showToast(t.nM); return; }
+      const entries = colA();
+      const arr = load(); arr.unshift({ id: Date.now(), type: 'anger', name, date, lang: CL, entries, savedAt: new Date().toISOString() }); save(arr);
+      showToast(t.tA2); resetAngerForm(); renderHistory();
+    }
+
+    function resetAngerForm() { document.getElementById('anger-entries').innerHTML = ''; AC = 0; addAngerEntry(); document.getElementById('a-date').value = today(); }
+
+    function renderHistory() {
+      const t = T[CL], list = document.getElementById('history-list');
+      let data = load();
+      const fn = (document.getElementById('hfn') || {}).value?.trim().toLowerCase() || '';
+      const ft = (document.getElementById('hft') || {}).value || '';
+      const fd = (document.getElementById('hfd') || {}).value || '';
+      if (fn) data = data.filter(e => e.name.toLowerCase().includes(fn));
+      if (ft) data = data.filter(e => e.type === ft);
+      if (fd) data = data.filter(e => e.date === fd);
+      if (!data.length) { list.innerHTML = `<div class="est"><div style="font-size:2.5rem;margin-bottom:10px;">📭</div><div style="font-weight:600">${t.hET}</div><div style="font-size:.85rem;margin-top:5px">${t.hED}</div></div>`; return; }
+      list.innerHTML = data.map(e => {
+        const bl = e.type === 'goals' ? t.bG : t.bA, bc = e.type === 'goals' ? 'bg' : 'ba';
+        const body = e.type === 'goals' ? gBody(e, t) : aBody(e, t);
+        return `<div class="hc" onclick="togCard('hc-${e.id}')">
+      <div class="hch"><span class="hcn">👤 ${x2(e.name)}</span><span class="hcd">📅 ${e.date || '—'}</span><span class="badge ${bc}">${bl}</span></div>
+      <div class="hcb" id="hc-${e.id}">${body}<div style="margin-top:12px;text-align:${CL === 'en' ? 'right' : 'left'}"><button class="btn bda bsm" onclick="delE(event,${e.id})">🗑 ${t.delLbl}</button></div></div>
+    </div>`;
+      }).join('');
+    }
+
+    function gBody(e, t) {
+      const cats = T[e.lang || 'ur'].cats;
+      return cats.map(c => {
+        const g = e.goals?.[c.key] || {}, s = g.short || '', m = g.medium || '', l = g.long || '';
+        if (!s && !m && !l) return '';
+        return `<div style="margin-bottom:10px"><div style="font-weight:700;color:var(--em);margin-bottom:4px;font-size:.85rem">${c.emoji} ${c.label}</div>
+      <div class="hrow"><span class="hlbl">${t.gTS.replace(/<[^>]+>/g, '').trim()}</span><span class="hval">${x2(s || '—')}</span></div>
+      <div class="hrow"><span class="hlbl">${t.gTM.replace(/<[^>]+>/g, '').trim()}</span><span class="hval">${x2(m || '—')}</span></div>
+      <div class="hrow"><span class="hlbl">${t.gTL.replace(/<[^>]+>/g, '').trim()}</span><span class="hval">${x2(l || '—')}</span></div>
+    </div>`;
+      }).join('');
+    }
+
+    function aBody(e, t) {
+      return (e.entries || []).map((en, i) => `
+    <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--bd)">
+      <div style="font-weight:700;color:var(--gd);margin-bottom:6px;font-size:.82rem">${t.aEL} ${i + 1}</div>
+      ${T[e.lang || 'ur'].aF.map(f => `<div class="hrow"><span class="hlbl">${f.label}</span><span class="hval">${x2(en[f.key] || '—')}</span></div>`).join('')}
+      <div class="hrow"><span class="hlbl">${t.aIN}</span><span class="hval">${en.intensity || '—'}/10</span></div>
+      <div class="hrow"><span class="hlbl">${t.aBT}</span><span class="hval">${x2(en.better || '—')}</span></div>
+    </div>`).join('');
+    }
+
+    function togCard(id) { const e = document.getElementById(id); if (e) e.classList.toggle('open'); }
+    function delE(ev, id) { ev.stopPropagation(); if (!confirm(T[CL].cC)) return; save(load().filter(e => e.id !== id)); renderHistory(); }
+    function clearFilters() { ['hfn', 'hfd'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; }); const s = document.getElementById('hft'); if (s) s.value = ''; renderHistory(); }
+    function switchTab(tab, e) { document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active')); document.getElementById('panel-' + tab).classList.add('active'); if (e) e.currentTarget.classList.add('active'); if (tab === 'history') renderHistory(); }
+    function showToast(msg) { const t = document.getElementById('toast'); t.textContent = '✅ ' + msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+    function today() { return new Date().toISOString().split('T')[0]; }
+    function x1(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+    function x2(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setLang(CL);
+      document.getElementById('g-date').value = today();
+      document.getElementById('a-date').value = today();
+    });
+  </script>
+</body>
+
+</html>
