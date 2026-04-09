@@ -396,20 +396,18 @@ const T = {
 };
 
 // ═══════════════════════════════════════════════════
-//  INDEXEDDB  — persistent local database
+//  INDEXEDDB  — local cache / offline store
 //  DB name : WorksheetsDB  |  version : 1
 //  Object store : entries  |  keyPath : id (number timestamp)
-//  Index on "savedAt" for chronological retrieval
 // ═══════════════════════════════════════════════════
 const DB_NAME    = 'WorksheetsDB';
 const DB_VERSION = 1;
 const STORE      = 'entries';
-let   db         = null;   // will hold the open IDBDatabase
+let   db         = null;
 
 function openDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
-
     req.onupgradeneeded = e => {
       const idb = e.target.result;
       if (!idb.objectStoreNames.contains(STORE)) {
@@ -420,24 +418,21 @@ function openDB() {
         store.createIndex('date',    'date',    { unique: false });
       }
     };
-
     req.onsuccess = e => { db = e.target.result; resolve(db); };
     req.onerror   = e => reject(e.target.error);
   });
 }
 
-/* Add a new record */
-function dbAdd(record) {
+function idbAdd(record) {
   return new Promise((resolve, reject) => {
     const tx  = db.transaction(STORE, 'readwrite');
-    const req = tx.objectStore(STORE).add(record);
+    const req = tx.objectStore(STORE).put(record); // put = upsert
     req.onsuccess = () => resolve(req.result);
     req.onerror   = e  => reject(e.target.error);
   });
 }
 
-/* Update an existing record by id */
-function dbPut(record) {
+function idbPut(record) {
   return new Promise((resolve, reject) => {
     const tx  = db.transaction(STORE, 'readwrite');
     const req = tx.objectStore(STORE).put(record);
@@ -446,8 +441,7 @@ function dbPut(record) {
   });
 }
 
-/* Delete a record by id */
-function dbDelete(id) {
+function idbDelete(id) {
   return new Promise((resolve, reject) => {
     const tx  = db.transaction(STORE, 'readwrite');
     const req = tx.objectStore(STORE).delete(id);
@@ -456,22 +450,20 @@ function dbDelete(id) {
   });
 }
 
-/* Get all records, sorted newest-first */
-function dbGetAll() {
+function idbGetAll() {
   return new Promise((resolve, reject) => {
-    const tx    = db.transaction(STORE, 'readonly');
-    const req   = tx.objectStore(STORE).getAll();
+    const tx  = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).getAll();
     req.onsuccess = () => {
       const all = req.result || [];
-      all.sort((a,b) => b.id - a.id);   // newest first
+      all.sort((a,b) => b.id - a.id);
       resolve(all);
     };
     req.onerror = e => reject(e.target.error);
   });
 }
 
-/* Get a single record by id */
-function dbGet(id) {
+function idbGet(id) {
   return new Promise((resolve, reject) => {
     const tx  = db.transaction(STORE, 'readonly');
     const req = tx.objectStore(STORE).get(id);
@@ -480,7 +472,69 @@ function dbGet(id) {
   });
 }
 
-/* Migrate old localStorage data into IndexedDB on first run */
+// ═══════════════════════════════════════════════════
+//  API  — Neon PostgreSQL via Vercel serverless
+// ═══════════════════════════════════════════════════
+const API = '/api/entries';
+
+async function apiAdd(record) {
+  const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(record) });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+async function apiPut(record) {
+  const r = await fetch(API, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(record) });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+async function apiDelete(id) {
+  const r = await fetch(`${API}?id=${id}`, { method:'DELETE' });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+async function apiGetAll() {
+  const r = await fetch(API);
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+// ═══════════════════════════════════════════════════
+//  UNIFIED DB LAYER  — writes go to both; reads from API (fallback: IDB)
+// ═══════════════════════════════════════════════════
+async function dbAdd(record) {
+  await idbAdd(record);                      // local-first — never lose data
+  apiAdd(record).catch(e => console.warn('API sync failed (add):', e));
+}
+
+async function dbPut(record) {
+  await idbPut(record);
+  apiPut(record).catch(e => console.warn('API sync failed (put):', e));
+}
+
+async function dbDelete(id) {
+  await idbDelete(id);
+  apiDelete(id).catch(e => console.warn('API sync failed (delete):', e));
+}
+
+async function dbGet(id) {
+  return idbGet(id);
+}
+
+async function dbGetAll() {
+  try {
+    const remote = await apiGetAll();
+    // Merge remote records into local IDB (so local stays in sync)
+    for (const rec of remote) {
+      await idbAdd(rec).catch(()=>{});
+    }
+    return remote;
+  } catch(e) {
+    console.warn('API unavailable, using local IDB:', e);
+    return idbGetAll();
+  }
+}
+
+/* Migrate old localStorage data into IDB+API on first run */
 async function migrateFromLocalStorage() {
   const OLD_KEY = 'ws_v4';
   const raw = localStorage.getItem(OLD_KEY);
@@ -488,14 +542,27 @@ async function migrateFromLocalStorage() {
   try {
     const arr = JSON.parse(raw);
     if (!Array.isArray(arr) || arr.length === 0) return;
-    const existing = await dbGetAll();
-    if (existing.length > 0) return;   // already migrated
+    const existing = await idbGetAll();
+    if (existing.length > 0) { localStorage.removeItem(OLD_KEY); return; }
     for (const rec of arr) {
       await dbAdd(rec).catch(()=>{});
     }
     localStorage.removeItem(OLD_KEY);
-    console.log(`Migrated ${arr.length} records from localStorage → IndexedDB`);
+    console.log(`Migrated ${arr.length} records from localStorage → IDB+API`);
   } catch(e) { console.warn('Migration failed', e); }
+}
+
+/* One-time sync: push any IDB-only records up to the API */
+async function syncIdbToApi() {
+  try {
+    const [local, remote] = await Promise.all([idbGetAll(), apiGetAll()]);
+    const remoteIds = new Set(remote.map(r => r.id));
+    const missing = local.filter(r => !remoteIds.has(r.id));
+    for (const rec of missing) {
+      await apiAdd(rec).catch(()=>{});
+    }
+    if (missing.length > 0) console.log(`Synced ${missing.length} local-only records → API`);
+  } catch(e) { console.warn('IDB→API sync failed:', e); }
 }
 
 // ═══════════════════════════════════════════════════
@@ -943,6 +1010,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     await openDB();
     await migrateFromLocalStorage();
+    // Push any IDB-only records up to the API (preserves old data)
+    await syncIdbToApi();
 
     // pre-load history into cache
     historyCache = await dbGetAll();
