@@ -187,8 +187,10 @@ html[lang="en"] .gt tbody td.cl{background:linear-gradient(to right,var(--emp),t
 
 <!-- TABS -->
 <nav class="tabs">
-  <button class="tbtn active" id="tab-goals"   onclick="switchTab('goals',event)">🎯 <span id="tgl">اہداف</span></button>
+  <button class="tbtn active" id="tab-goals"    onclick="switchTab('goals',event)">🎯 <span id="tgl">اہداف</span></button>
   <button class="tbtn"        id="tab-anger"   onclick="switchTab('anger',event)">😤 <span id="tal">غصے کا لاگ</span></button>
+  <button class="tbtn"        id="tab-thoughts" onclick="switchTab('thoughts',event)">🧠 <span id="tthl">منفی خیالات</span></button>
+  <button class="tbtn"        id="tab-sleep"   onclick="switchTab('sleep',event)">🌙 <span id="tsll">نیند لاگ</span></button>
   <button class="tbtn"        id="tab-history" onclick="switchTab('history',event)">📂 <span id="thl">پچھلے اندراجات</span></button>
 </nav>
 
@@ -246,6 +248,56 @@ html[lang="en"] .gt tbody td.cl{background:linear-gradient(to right,var(--emp),t
   </div>
 </div>
 
+<!-- NEGATIVE THOUGHTS PANEL -->
+<div class="panel" id="panel-thoughts">
+  <div class="card">
+    <div class="ctitle"><span class="cicon">🧠</span><span id="thct">منفی خیالات کا لاگ</span></div>
+    <div class="pbar">
+      <div class="fd"><label id="thln">نام</label><input type="text" id="th-name" placeholder="اپنا نام لکھیں"/></div>
+      <div class="fd"><label id="thld">تاریخ</label><input type="date" id="th-date"/></div>
+    </div>
+  </div>
+  <div id="thoughts-entries"></div>
+  <button class="btn bol" onclick="addThoughtsEntry()" style="width:100%;justify-content:center;margin-bottom:14px;">
+    ➕ <span id="thal">نئی اندراج شامل کریں</span>
+  </button>
+  <div class="card">
+    <div class="remarks-row" style="margin-top:0;padding-top:0;border-top:none;">
+      <label><span class="remarks-label-icon">💬</span> <span id="th-remarks-lbl">ریمارکس / نوٹس</span></label>
+      <textarea id="th-remarks" rows="3" placeholder="کوئی اضافی نوٹ یا تبصرہ…"></textarea>
+    </div>
+  </div>
+  <div class="acts">
+    <button class="btn bpr" onclick="saveThoughts()">💾 <span id="thbs">محفوظ کریں</span></button>
+    <button class="btn bol" onclick="resetThoughtsForm()">🔄 <span id="thbn">نئی اندراج</span></button>
+  </div>
+</div>
+
+<!-- SLEEP LOG PANEL -->
+<div class="panel" id="panel-sleep">
+  <div class="card">
+    <div class="ctitle"><span class="cicon">🌙</span><span id="slct">نیند کا لاگ</span></div>
+    <div class="pbar">
+      <div class="fd"><label id="slln">نام</label><input type="text" id="sl-name" placeholder="اپنا نام لکھیں"/></div>
+      <div class="fd"><label id="slld">تاریخ</label><input type="date" id="sl-date"/></div>
+    </div>
+  </div>
+  <div id="sleep-entries"></div>
+  <button class="btn bol" onclick="addSleepEntry()" style="width:100%;justify-content:center;margin-bottom:14px;">
+    ➕ <span id="slal">نئی اندراج شامل کریں</span>
+  </button>
+  <div class="card">
+    <div class="remarks-row" style="margin-top:0;padding-top:0;border-top:none;">
+      <label><span class="remarks-label-icon">💬</span> <span id="sl-remarks-lbl">ریمارکس / نوٹس</span></label>
+      <textarea id="sl-remarks" rows="3" placeholder="کوئی اضافی نوٹ یا تبصرہ…"></textarea>
+    </div>
+  </div>
+  <div class="acts">
+    <button class="btn bpr" onclick="saveSleep()">💾 <span id="slbs">محفوظ کریں</span></button>
+    <button class="btn bol" onclick="resetSleepForm()">🔄 <span id="slbn">نئی اندراج</span></button>
+  </div>
+</div>
+
 <!-- HISTORY PANEL -->
 <div class="panel" id="panel-history">
   <div class="card">
@@ -256,7 +308,9 @@ html[lang="en"] .gt tbody td.cl{background:linear-gradient(to right,var(--emp),t
         <select id="hft" onchange="renderHistory()">
           <option value="" id="hoa">سب</option>
           <option value="goals" id="hog">اہداف</option>
-          <option value="anger" id="hoa2">غصے کا لاگ</option>
+          <option value="anger"    id="hoa2">غصے کا لاگ</option>
+          <option value="thoughts" id="hoth">منفی خیالات</option>
+          <option value="sleep"    id="hosl">نیند لاگ</option>
         </select>
       </div>
       <div class="fd"><label id="hld">تاریخ</label><input type="date" id="hfd" oninput="renderHistory()"/></div>
@@ -309,13 +363,14 @@ const T = {
     aIN:'غصے کی شدت (1–10)', aBT:'کیا بہتر کر سکتے تھے؟', aBP:'اگلی بار کیا مختلف کریں گے…',
     aRL:'ریمارکس / نوٹس', aRP:'کوئی اضافی نوٹ یا تبصرہ…',
     hCT:'پچھلے اندراجات', hLN:'نام سے تلاش', hLT:'قسم', hLD:'تاریخ',
-    hOA:'سب', hOG:'اہداف', hOA2:'غصے کا لاگ', hCF:'فلٹر صاف کریں',
+    hOA:'سب', hOG:'اہداف', hOA2:'غصے کا لاگ', hOTH:'منفی خیالات', hOSL:'نیند لاگ', hCF:'فلٹر صاف کریں',
     hET:'کوئی اندراج نہیں', hED:'ابھی تک کوئی ڈیٹا محفوظ نہیں ہوا',
     pRL:'پرنٹ / PDF',
     tG2:'اہداف محفوظ ہو گئے!', tA2:'غصے کا لاگ محفوظ ہو گیا!',
+    tTH2:'منفی خیالات محفوظ ہو گئے!', tSL2:'نیند لاگ محفوظ ہو گیا!',
     tU:'تبدیلیاں محفوظ ہو گئیں!', tC:'حذف ہو گیا!',
     cC:'کیا آپ واقعی حذف کرنا چاہتے ہیں؟', nM:'براہ کرم نام درج کریں',
-    bG:'اہداف', bA:'غصے کا لاگ',
+    bG:'اہداف', bA:'غصے کا لاگ', bTH:'منفی خیالات', bSL:'نیند لاگ',
     delLbl:'حذف کریں', editLbl:'ترمیم کریں',
     mTitle:'✏️ اندراج میں ترمیم کریں', mSave:'تبدیلیاں محفوظ کریں', mCancel:'منسوخ کریں',
     editNotice:'⚠️ آپ اس اندراج میں ترمیم کر رہے ہیں',
@@ -340,7 +395,36 @@ const T = {
       {key:'reaction',label:'جسمانی ردِ عمل؟',         type:'textarea', full:false},
       {key:'behave',  label:'آپ نے کیا کیا؟',          type:'textarea', full:false},
       {key:'outcome', label:'نتیجہ کیا نکلا؟',         type:'textarea', full:false},
-    ]
+    ],
+    tTH:'منفی خیالات', tSL:'نیند لاگ',
+    thCT:'منفی خیالات کا لاگ', thLN:'نام', thNP:'اپنا نام لکھیں', thLD:'تاریخ',
+    thAL:'نئی اندراج شامل کریں', thBS:'محفوظ کریں', thBN:'نئی اندراج',
+    thEL:'اندراج', thRM:'ہٹائیں',
+    thIN:'خیال کی شدت (1–10)', thRL:'ریمارکس / نوٹس', thRP:'کوئی اضافی نوٹ یا تبصرہ…',
+    thF:[
+      {key:'date',     label:'تاریخ',                              type:'date',     full:false},
+      {key:'time',     label:'وقت',                                type:'time',     full:false},
+      {key:'trigger',  label:'کیا ہوا جب یہ خیال آیا؟ (ٹرگر)',   type:'textarea', full:true },
+      {key:'thought',  label:'کیا خیال آیا؟',                     type:'textarea', full:true },
+      {key:'feeling',  label:'کیا محسوس کیا؟',                    type:'textarea', full:false},
+      {key:'duration', label:'کتنی دیر تک رہا؟',                  type:'text',     full:false},
+      {key:'ended',    label:'کیا یہ خیال ختم ہو گیا؟',          type:'text',     full:false},
+    ],
+    slCT:'نیند کا لاگ', slLN:'نام', slNP:'اپنا نام لکھیں', slLD:'تاریخ',
+    slAL:'نئی اندراج شامل کریں', slBS:'محفوظ کریں', slBN:'نئی اندراج',
+    slEL:'اندراج', slRM:'ہٹائیں',
+    slIN:'احساسات کی شدت (1–10)', slRL:'ریمارکس / نوٹس', slRP:'کوئی اضافی نوٹ یا تبصرہ…',
+    slF:[
+      {key:'date',        label:'تاریخ',                                    type:'date',     full:false},
+      {key:'time',        label:'سونے کا وقت',                             type:'time',     full:false},
+      {key:'preSleep',    label:'سونے سے پہلے کیا کر رہے تھے؟',          type:'textarea', full:true },
+      {key:'thoughts',    label:'سوتے وقت کیا خیالات آ رہے تھے؟',        type:'textarea', full:true },
+      {key:'feeling',     label:'کیا محسوس ہو رہا تھا؟',                  type:'textarea', full:false},
+      {key:'wokeUp',      label:'کیا نیند میں جاگ گئے؟',                  type:'text',     full:false},
+      {key:'feelDuration',label:'جاگنے کے بعد کتنی دیر تک وہ احساسات رہے؟', type:'text',  full:false},
+      {key:'physical',    label:'جسمانی طور پر کیا محسوس ہوا؟',           type:'textarea', full:false},
+      {key:'aftermath',   label:'اس کے بعد کیا ہوا؟',                     type:'textarea', full:true },
+    ],
   },
   en:{dir:'ltr',lang:'en',
     hT:'📋 Worksheets', hS:'Goal Setting Form & Anger Log',
@@ -360,13 +444,14 @@ const T = {
     aIN:'Anger Intensity (1–10)', aBT:'What could you have done better?', aBP:'What will you do differently next time…',
     aRL:'Remarks / Notes', aRP:'Any additional notes or comments…',
     hCT:'Past Entries', hLN:'Search by name', hLT:'Type', hLD:'Date',
-    hOA:'All', hOG:'Goals', hOA2:'Anger Log', hCF:'Clear Filters',
+    hOA:'All', hOG:'Goals', hOA2:'Anger Log', hOTH:'Negative Thoughts', hOSL:'Sleep Log', hCF:'Clear Filters',
     hET:'No entries yet', hED:'No data has been saved yet',
     pRL:'Print / PDF',
     tG2:'Goals saved!', tA2:'Anger log saved!',
+    tTH2:'Negative thoughts saved!', tSL2:'Sleep log saved!',
     tU:'Changes saved!', tC:'Deleted!',
     cC:'Are you sure you want to delete this?', nM:'Please enter a name',
-    bG:'Goals', bA:'Anger Log',
+    bG:'Goals', bA:'Anger Log', bTH:'Negative Thoughts', bSL:'Sleep Log',
     delLbl:'Delete', editLbl:'Edit',
     mTitle:'✏️ Edit Entry', mSave:'Save Changes', mCancel:'Cancel',
     editNotice:'⚠️ You are editing this entry',
@@ -391,7 +476,36 @@ const T = {
       {key:'reaction',label:'Physical reaction?',           type:'textarea', full:false},
       {key:'behave',  label:'What did you do?',             type:'textarea', full:false},
       {key:'outcome', label:'What was the outcome?',        type:'textarea', full:false},
-    ]
+    ],
+    tTH:'Negative Thoughts', tSL:'Sleep Log',
+    thCT:'Negative Thoughts Log', thLN:'Name', thNP:'Enter your name', thLD:'Date',
+    thAL:'Add New Entry', thBS:'Save Entry', thBN:'New Entry',
+    thEL:'Entry', thRM:'Remove',
+    thIN:'Thought Intensity (1–10)', thRL:'Remarks / Notes', thRP:'Any additional notes…',
+    thF:[
+      {key:'date',     label:'Date',                          type:'date',     full:false},
+      {key:'time',     label:'Time',                          type:'time',     full:false},
+      {key:'trigger',  label:'What triggered this thought?',  type:'textarea', full:true },
+      {key:'thought',  label:'What was the thought?',         type:'textarea', full:true },
+      {key:'feeling',  label:'What did you feel?',            type:'textarea', full:false},
+      {key:'duration', label:'How long did it last?',         type:'text',     full:false},
+      {key:'ended',    label:'Did it end / resolve?',         type:'text',     full:false},
+    ],
+    slCT:'Sleep Log', slLN:'Name', slNP:'Enter your name', slLD:'Date',
+    slAL:'Add New Entry', slBS:'Save Entry', slBN:'New Entry',
+    slEL:'Entry', slRM:'Remove',
+    slIN:'Feeling Intensity (1–10)', slRL:'Remarks / Notes', slRP:'Any additional notes…',
+    slF:[
+      {key:'date',        label:'Date',                                   type:'date',     full:false},
+      {key:'time',        label:'Sleep Time',                             type:'time',     full:false},
+      {key:'preSleep',    label:'What were you doing before sleeping?',   type:'textarea', full:true },
+      {key:'thoughts',    label:'What thoughts were you having?',         type:'textarea', full:true },
+      {key:'feeling',     label:'What were you feeling?',                 type:'textarea', full:false},
+      {key:'wokeUp',      label:'Did you wake up in the middle of sleep?',type:'text',     full:false},
+      {key:'feelDuration',label:'How long did those feelings last after?', type:'text',    full:false},
+      {key:'physical',    label:'What did you feel physically?',          type:'textarea', full:false},
+      {key:'aftermath',   label:'What happened after?',                   type:'textarea', full:true },
+    ],
   }
 };
 
@@ -595,11 +709,19 @@ function setLang(l) {
   s('act',t.aCT); s('aln',t.aLN); document.getElementById('a-name').placeholder=t.aNP;
   s('ald',t.aLD); s('aal',t.aAL); s('abs',t.aBS); s('abn',t.aBN);
   s('a-remarks-lbl',t.aRL); document.getElementById('a-remarks').placeholder=t.aRP;
+  s('tthl',t.tTH); s('tsll',t.tSL);
+  s('thct',t.thCT); s('thln',t.thLN); document.getElementById('th-name').placeholder=t.thNP;
+  s('thld',t.thLD); s('thal',t.thAL); s('thbs',t.thBS); s('thbn',t.thBN);
+  s('th-remarks-lbl',t.thRL); document.getElementById('th-remarks').placeholder=t.thRP;
+  s('slct',t.slCT); s('slln',t.slLN); document.getElementById('sl-name').placeholder=t.slNP;
+  s('slld',t.slLD); s('slal',t.slAL); s('slbs',t.slBS); s('slbn',t.slBN);
+  s('sl-remarks-lbl',t.slRL); document.getElementById('sl-remarks').placeholder=t.slRP;
   s('hct',t.hCT); s('hln',t.hLN); s('hlt',t.hLT); s('hld',t.hLD);
-  s('hoa',t.hOA); s('hog',t.hOG); s('hoa2',t.hOA2); s('hcf',t.hCF);
+  s('hoa',t.hOA); s('hog',t.hOG); s('hoa2',t.hOA2);
+  s('hoth',t.hOTH); s('hosl',t.hOSL); s('hcf',t.hCF);
   s('prl',t.pRL);
   s('modal-save-lbl', t.mSave); s('modal-cancel-lbl', t.mCancel);
-  buildGoalTable(); rebuildAnger();
+  buildGoalTable(); rebuildAnger(); rebuildThoughts(); rebuildSleep();
   renderHistoryFromCache();
 }
 
@@ -727,6 +849,114 @@ function resetAngerForm() {
 }
 
 // ═══════════════════════════════════════════════════
+//  NEGATIVE THOUGHTS — FORM
+// ═══════════════════════════════════════════════════
+let THC = 0;
+
+function rebuildThoughts() {
+  document.getElementById('thoughts-entries').innerHTML = ''; THC=0; addThoughtsEntry();
+}
+
+function addThoughtsEntry(sv) {
+  THC++; const n=THC, t=T[CL];
+  const d = document.createElement('div');
+  d.className='ae'; d.id='thoughts-'+n;
+  const fields = t.thF.map(f=>{
+    const inp = f.type==='textarea'
+      ? `<textarea id="the-${n}-${f.key}" placeholder="${x1(f.label)}…">${x2(sv?.[f.key]||'')}</textarea>`
+      : `<input type="${f.type}" id="the-${n}-${f.key}" value="${x1(sv?.[f.key]||'')}"/>`;
+    return `<div class="${f.full?'full':''}"><label>${x2(f.label)}</label>${inp}</div>`;
+  }).join('');
+  const remBtn = THC>1?`<div style="margin-top:10px;text-align:${CL==='en'?'right':'left'}"><button class="btn bda" onclick="remTH(${n})">✕ ${x2(t.thRM)}</button></div>`:'';
+  d.innerHTML = `<div class="aenum">${x2(t.thEL)} ${n}</div><div class="agrid">${fields}<div><label>${x2(t.thIN)}</label><div class="sw"><input type="range" min="1" max="10" value="${sv?.intensity||5}" id="the-${n}-intensity" oninput="document.getElementById('thv-${n}').textContent=this.value"/><span class="sv" id="thv-${n}">${sv?.intensity||5}</span></div></div></div>${remBtn}`;
+  document.getElementById('thoughts-entries').appendChild(d);
+}
+
+function remTH(n) { const e=document.getElementById('thoughts-'+n); if(e) e.remove(); }
+
+function colTH() {
+  const ukeys=[...new Set([...T.ur.thF,...T.en.thF].map(f=>f.key).concat(['intensity']))];
+  return [...document.querySelectorAll('#thoughts-entries .ae')].map(e=>{
+    const n=e.id.split('-')[1], o={};
+    ukeys.forEach(k=>{ const el=document.getElementById(`the-${n}-${k}`); if(el) o[k]=el.value; });
+    return o;
+  });
+}
+
+async function saveThoughts() {
+  const t=T[CL];
+  const name=document.getElementById('th-name').value.trim();
+  const date=document.getElementById('th-date').value;
+  if (!name) { showToast(t.nM); return; }
+  const record={id:Date.now(),type:'thoughts',name,date,lang:CL,entries:colTH(),remarks:document.getElementById('th-remarks').value,savedAt:new Date().toISOString()};
+  await dbAdd(record);
+  historyCache.unshift(record);
+  showToast(t.tTH2);
+  resetThoughtsForm();
+  renderHistoryFromCache();
+}
+
+function resetThoughtsForm() {
+  document.getElementById('thoughts-entries').innerHTML=''; THC=0; addThoughtsEntry();
+  document.getElementById('th-date').value=today();
+  document.getElementById('th-remarks').value='';
+}
+
+// ═══════════════════════════════════════════════════
+//  SLEEP LOG — FORM
+// ═══════════════════════════════════════════════════
+let SLC = 0;
+
+function rebuildSleep() {
+  document.getElementById('sleep-entries').innerHTML = ''; SLC=0; addSleepEntry();
+}
+
+function addSleepEntry(sv) {
+  SLC++; const n=SLC, t=T[CL];
+  const d = document.createElement('div');
+  d.className='ae'; d.id='sleep-'+n;
+  const fields = t.slF.map(f=>{
+    const inp = f.type==='textarea'
+      ? `<textarea id="sle-${n}-${f.key}" placeholder="${x1(f.label)}…">${x2(sv?.[f.key]||'')}</textarea>`
+      : `<input type="${f.type}" id="sle-${n}-${f.key}" value="${x1(sv?.[f.key]||'')}"/>`;
+    return `<div class="${f.full?'full':''}"><label>${x2(f.label)}</label>${inp}</div>`;
+  }).join('');
+  const remBtn = SLC>1?`<div style="margin-top:10px;text-align:${CL==='en'?'right':'left'}"><button class="btn bda" onclick="remSL(${n})">✕ ${x2(t.slRM)}</button></div>`:'';
+  d.innerHTML = `<div class="aenum">${x2(t.slEL)} ${n}</div><div class="agrid">${fields}<div><label>${x2(t.slIN)}</label><div class="sw"><input type="range" min="1" max="10" value="${sv?.intensity||5}" id="sle-${n}-intensity" oninput="document.getElementById('slv-${n}').textContent=this.value"/><span class="sv" id="slv-${n}">${sv?.intensity||5}</span></div></div></div>${remBtn}`;
+  document.getElementById('sleep-entries').appendChild(d);
+}
+
+function remSL(n) { const e=document.getElementById('sleep-'+n); if(e) e.remove(); }
+
+function colSL() {
+  const ukeys=[...new Set([...T.ur.slF,...T.en.slF].map(f=>f.key).concat(['intensity']))];
+  return [...document.querySelectorAll('#sleep-entries .ae')].map(e=>{
+    const n=e.id.split('-')[1], o={};
+    ukeys.forEach(k=>{ const el=document.getElementById(`sle-${n}-${k}`); if(el) o[k]=el.value; });
+    return o;
+  });
+}
+
+async function saveSleep() {
+  const t=T[CL];
+  const name=document.getElementById('sl-name').value.trim();
+  const date=document.getElementById('sl-date').value;
+  if (!name) { showToast(t.nM); return; }
+  const record={id:Date.now(),type:'sleep',name,date,lang:CL,entries:colSL(),remarks:document.getElementById('sl-remarks').value,savedAt:new Date().toISOString()};
+  await dbAdd(record);
+  historyCache.unshift(record);
+  showToast(t.tSL2);
+  resetSleepForm();
+  renderHistoryFromCache();
+}
+
+function resetSleepForm() {
+  document.getElementById('sleep-entries').innerHTML=''; SLC=0; addSleepEntry();
+  document.getElementById('sl-date').value=today();
+  document.getElementById('sl-remarks').value='';
+}
+
+// ═══════════════════════════════════════════════════
 //  HISTORY
 // ═══════════════════════════════════════════════════
 async function loadAndRenderHistory() {
@@ -754,9 +984,9 @@ function renderHistoryFromCache() {
   }
 
   list.innerHTML = data.map(e => {
-    const bl   = e.type==='goals'?t.bG:t.bA;
+    const bl   = e.type==='goals'?t.bG:e.type==='anger'?t.bA:e.type==='thoughts'?t.bTH:t.bSL;
     const bc   = e.type==='goals'?'bg':'ba';
-    const body = e.type==='goals' ? gBody(e,t) : aBody(e,t);
+    const body = e.type==='goals'?gBody(e,t):e.type==='anger'?aBody(e,t):e.type==='thoughts'?thBody(e,t):slBody(e,t);
     const remarksHtml = e.remarks ? `
       <div class="hremarks">
         <div class="hremarks-lbl">💬 ${t.rmkLbl}</div>
@@ -811,6 +1041,26 @@ function aBody(e, t) {
     </div>`).join('');
 }
 
+function thBody(e, t) {
+  return (e.entries||[]).map((en,i)=>`
+    <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--bd)">
+      <div style="font-weight:700;color:var(--gd);margin-bottom:6px;font-size:.82rem">${t.thEL} ${i+1}</div>
+      ${T[e.lang||'ur'].thF.map(f=>`
+        <div class="hrow"><span class="hlbl">${f.label}</span><span class="hval">${x2(en[f.key]||'—')}</span></div>`).join('')}
+      <div class="hrow"><span class="hlbl">${t.thIN}</span><span class="hval">${en.intensity||'—'}/10</span></div>
+    </div>`).join('');
+}
+
+function slBody(e, t) {
+  return (e.entries||[]).map((en,i)=>`
+    <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--bd)">
+      <div style="font-weight:700;color:var(--gd);margin-bottom:6px;font-size:.82rem">${t.slEL} ${i+1}</div>
+      ${T[e.lang||'ur'].slF.map(f=>`
+        <div class="hrow"><span class="hlbl">${f.label}</span><span class="hval">${x2(en[f.key]||'—')}</span></div>`).join('')}
+      <div class="hrow"><span class="hlbl">${t.slIN}</span><span class="hval">${en.intensity||'—'}/10</span></div>
+    </div>`).join('');
+}
+
 function togCard(id) { const e=document.getElementById(id); if(e) e.classList.toggle('open'); }
 
 async function delEntry(ev, id) {
@@ -840,7 +1090,7 @@ async function openEdit(id) {
   document.getElementById('modal-save-lbl').textContent    = t.mSave;
   document.getElementById('modal-cancel-lbl').textContent  = t.mCancel;
   document.getElementById('modal-body').innerHTML =
-    rec.type === 'goals' ? buildGoalEditForm(rec,t) : buildAngerEditForm(rec,t);
+    rec.type==='goals'?buildGoalEditForm(rec,t):rec.type==='anger'?buildAngerEditForm(rec,t):rec.type==='thoughts'?buildThoughtsEditForm(rec,t):buildSleepEditForm(rec,t);
   document.getElementById('edit-modal').classList.add('open');
 }
 
@@ -923,6 +1173,64 @@ function buildAngerEditForm(rec, t) {
   return html;
 }
 
+function buildThoughtsEditForm(rec, t) {
+  const lang=rec.lang||'ur', dir=T[lang].dir, fields=T[lang].thF;
+  let html=`<div class="edit-notice">${t.editNotice}</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+      <div style="flex:1;min-width:140px"><label>${t.thLN}</label>
+        <input type="text" id="em-name" value="${x1(rec.name)}" style="direction:${dir}"/></div>
+      <div style="flex:1;min-width:140px"><label>${t.thLD}</label>
+        <input type="date" id="em-date" value="${rec.date||''}"/></div>
+    </div>`;
+  (rec.entries||[]).forEach((en,i)=>{
+    html+=`<div style="border:1.5px solid var(--bd);border-radius:var(--rd);padding:16px;margin-bottom:14px;">
+      <div style="font-weight:700;color:var(--gd);margin-bottom:10px;font-size:.82rem">${t.thEL} ${i+1}</div>
+      <div class="agrid">
+        ${fields.map(f=>`<div class="${f.full?'full':''}"><label>${f.label}</label>
+          ${f.type==='textarea'
+            ?`<textarea id="em-th-${i}-${f.key}" style="direction:${dir}" placeholder="${f.label}…">${x2(en[f.key]||'')}</textarea>`
+            :`<input type="${f.type}" id="em-th-${i}-${f.key}" value="${x1(en[f.key]||'')}"/>`}</div>`).join('')}
+        <div><label>${t.thIN}</label><div class="sw">
+          <input type="range" min="1" max="10" value="${en.intensity||5}" id="em-th-${i}-intensity"
+            oninput="document.getElementById('em-thv-${i}').textContent=this.value"/>
+          <span class="sv" id="em-thv-${i}">${en.intensity||5}</span>
+        </div></div>
+      </div></div>`;
+  });
+  html+=`<div class="remarks-row"><label><span class="remarks-label-icon">💬</span> ${t.rmkLbl}</label>
+    <textarea id="em-remarks" placeholder="${t.thRP}" style="direction:${dir}">${x2(rec.remarks||'')}</textarea></div>`;
+  return html;
+}
+
+function buildSleepEditForm(rec, t) {
+  const lang=rec.lang||'ur', dir=T[lang].dir, fields=T[lang].slF;
+  let html=`<div class="edit-notice">${t.editNotice}</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+      <div style="flex:1;min-width:140px"><label>${t.slLN}</label>
+        <input type="text" id="em-name" value="${x1(rec.name)}" style="direction:${dir}"/></div>
+      <div style="flex:1;min-width:140px"><label>${t.slLD}</label>
+        <input type="date" id="em-date" value="${rec.date||''}"/></div>
+    </div>`;
+  (rec.entries||[]).forEach((en,i)=>{
+    html+=`<div style="border:1.5px solid var(--bd);border-radius:var(--rd);padding:16px;margin-bottom:14px;">
+      <div style="font-weight:700;color:var(--gd);margin-bottom:10px;font-size:.82rem">${t.slEL} ${i+1}</div>
+      <div class="agrid">
+        ${fields.map(f=>`<div class="${f.full?'full':''}"><label>${f.label}</label>
+          ${f.type==='textarea'
+            ?`<textarea id="em-sl-${i}-${f.key}" style="direction:${dir}" placeholder="${f.label}…">${x2(en[f.key]||'')}</textarea>`
+            :`<input type="${f.type}" id="em-sl-${i}-${f.key}" value="${x1(en[f.key]||'')}"/>`}</div>`).join('')}
+        <div><label>${t.slIN}</label><div class="sw">
+          <input type="range" min="1" max="10" value="${en.intensity||5}" id="em-sl-${i}-intensity"
+            oninput="document.getElementById('em-slv-${i}').textContent=this.value"/>
+          <span class="sv" id="em-slv-${i}">${en.intensity||5}</span>
+        </div></div>
+      </div></div>`;
+  });
+  html+=`<div class="remarks-row"><label><span class="remarks-label-icon">💬</span> ${t.rmkLbl}</label>
+    <textarea id="em-remarks" placeholder="${t.slRP}" style="direction:${dir}">${x2(rec.remarks||'')}</textarea></div>`;
+  return html;
+}
+
 async function saveEdit() {
   const t   = T[CL];
   const rec = await dbGet(editingId);
@@ -941,15 +1249,30 @@ async function saveEdit() {
       goals[c][tm]=i.value;
     });
     updated = {...rec, name, date, goals, remarks, editedAt:new Date().toISOString()};
-  } else {
+  } else if (rec.type==='anger') {
     const lang=rec.lang||'ur', fields=T[lang].aF;
     const allKeys=[...fields.map(f=>f.key),'intensity','better'];
     const entries=(rec.entries||[]).map((en,i)=>{
       const o={};
-      allKeys.forEach(k=>{
-        const el=document.getElementById(`em-ae-${i}-${k}`);
-        o[k]=el?el.value:(en[k]||'');
-      });
+      allKeys.forEach(k=>{ const el=document.getElementById(`em-ae-${i}-${k}`); o[k]=el?el.value:(en[k]||''); });
+      return o;
+    });
+    updated = {...rec, name, date, entries, remarks, editedAt:new Date().toISOString()};
+  } else if (rec.type==='thoughts') {
+    const lang=rec.lang||'ur', fields=T[lang].thF;
+    const allKeys=[...fields.map(f=>f.key),'intensity'];
+    const entries=(rec.entries||[]).map((en,i)=>{
+      const o={};
+      allKeys.forEach(k=>{ const el=document.getElementById(`em-th-${i}-${k}`); o[k]=el?el.value:(en[k]||''); });
+      return o;
+    });
+    updated = {...rec, name, date, entries, remarks, editedAt:new Date().toISOString()};
+  } else {
+    const lang=rec.lang||'ur', fields=T[lang].slF;
+    const allKeys=[...fields.map(f=>f.key),'intensity'];
+    const entries=(rec.entries||[]).map((en,i)=>{
+      const o={};
+      allKeys.forEach(k=>{ const el=document.getElementById(`em-sl-${i}-${k}`); o[k]=el?el.value:(en[k]||''); });
       return o;
     });
     updated = {...rec, name, date, entries, remarks, editedAt:new Date().toISOString()};
@@ -1029,8 +1352,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   loadingDiv.style.display = 'none';
 
   setLang(CL);
-  document.getElementById('g-date').value = today();
-  document.getElementById('a-date').value = today();
+  document.getElementById('g-date').value  = today();
+  document.getElementById('a-date').value  = today();
+  document.getElementById('th-date').value = today();
+  document.getElementById('sl-date').value = today();
 });
 
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
