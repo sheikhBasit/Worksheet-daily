@@ -387,14 +387,17 @@ const T = {
       {key:'others',      label:'دیگر (Others)',          emoji:'✨'},
     ],
     aF:[
-      {key:'date',    label:'تاریخ',                    type:'date',     full:false},
-      {key:'time',    label:'وقت',                      type:'time',     full:false},
-      {key:'trigger', label:'کیا واقعہ پیش آیا؟',      type:'textarea', full:true },
-      {key:'thought', label:'اس وقت کیا سوچ آئی؟',    type:'textarea', full:true },
-      {key:'feeling', label:'کیسے محسوس کیا؟',         type:'textarea', full:false},
-      {key:'reaction',label:'جسمانی ردِ عمل؟',         type:'textarea', full:false},
-      {key:'behave',  label:'آپ نے کیا کیا؟',          type:'textarea', full:false},
-      {key:'outcome', label:'نتیجہ کیا نکلا؟',         type:'textarea', full:false},
+      {key:'date',          label:'تاریخ',                              type:'date',     full:false},
+      {key:'time',          label:'وقت',                                type:'time',     full:false},
+      {key:'trigger',       label:'صورتِ حال کیا تھی؟',                type:'textarea', full:true },
+      {key:'thought',       label:'اس وقت ذہن میں کیا آیا؟',          type:'textarea', full:true },
+      {key:'emotions',      label:'کیا جذبات محسوس ہوئے؟',            type:'textarea', full:false},
+      {key:'feeling',       label:'جسم میں کیا محسوس ہوا؟',           type:'textarea', full:false},
+      {key:'reaction',      label:'آپ نے کیسا ردِ عمل ظاہر کیا؟',    type:'textarea', full:false},
+      {key:'behave',        label:'آپ نے کیا کیا؟',                    type:'textarea', full:false},
+      {key:'outcome',       label:'نتیجہ کیا نکلا؟',                   type:'textarea', full:false},
+      {key:'copingStrategy',label:'کون سی حکمت عملی کام آئی؟',        type:'textarea', full:false},
+      {key:'afterFeel',     label:'بعد میں کیسا محسوس ہوا؟',          type:'textarea', full:false},
     ],
     tTH:'منفی خیالات', tSL:'نیند لاگ',
     thCT:'منفی خیالات کا لاگ', thLN:'نام', thNP:'اپنا نام لکھیں', thLD:'تاریخ',
@@ -468,14 +471,17 @@ const T = {
       {key:'others',      label:'Others',        emoji:'✨'},
     ],
     aF:[
-      {key:'date',    label:'Date',                          type:'date',     full:false},
-      {key:'time',    label:'Time',                          type:'time',     full:false},
-      {key:'trigger', label:'What happened? (Trigger)',      type:'textarea', full:true },
-      {key:'thought', label:'What were you thinking?',      type:'textarea', full:true },
-      {key:'feeling', label:'How did you feel?',            type:'textarea', full:false},
-      {key:'reaction',label:'Physical reaction?',           type:'textarea', full:false},
-      {key:'behave',  label:'What did you do?',             type:'textarea', full:false},
-      {key:'outcome', label:'What was the outcome?',        type:'textarea', full:false},
+      {key:'date',          label:'Date',                              type:'date',     full:false},
+      {key:'time',          label:'Time',                              type:'time',     full:false},
+      {key:'trigger',       label:'Situation (What happened?)',        type:'textarea', full:true },
+      {key:'thought',       label:'Thoughts (What went through your mind?)', type:'textarea', full:true },
+      {key:'emotions',      label:'Emotions (Anger, frustration, etc.)',     type:'textarea', full:false},
+      {key:'feeling',       label:'Physical sensations felt?',         type:'textarea', full:false},
+      {key:'reaction',      label:'How did you respond?',              type:'textarea', full:false},
+      {key:'behave',        label:'What did you do?',                  type:'textarea', full:false},
+      {key:'outcome',       label:'What was the outcome?',             type:'textarea', full:false},
+      {key:'copingStrategy',label:'Coping strategy that worked?',      type:'textarea', full:false},
+      {key:'afterFeel',     label:'How did you feel afterward?',       type:'textarea', full:false},
     ],
     tTH:'Negative Thoughts', tSL:'Sleep Log',
     thCT:'Negative Thoughts Log', thLN:'Name', thNP:'Enter your name', thLD:'Date',
@@ -816,7 +822,7 @@ function addAngerEntry(sv) {
 function remE(n) { const e=document.getElementById('anger-'+n); if(e) e.remove(); }
 
 function colA() {
-  const keys = [...new Set([...T.ur.aF,...T.en.aF].map(f=>f.key).concat(['intensity','better']))];
+  const keys = [...new Set([...T.ur.aF,...T.en.aF].map(f=>f.key).concat(['intensity','better','copingStrategy','afterFeel']))];
   return [...document.querySelectorAll('.ae')].map(e => {
     const n=e.id.split('-')[1], o={};
     keys.forEach(k=>{ const el=document.getElementById(`ae-${n}-${k}`); if(el) o[k]=el.value; });
